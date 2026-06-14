@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Karen&#x27;s Birthday Party - 13 June 2026</title>
+  <style>
+    :root {
+      --page-bg: #faf8f5;
+      --text: #222;
+      --muted: #777;
+      --gap: 18px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--page-bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    header {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 42px 18px 26px;
+      text-align: center;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 4rem);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 1;
+    }
+
+    .date {
+      margin-top: 12px;
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      color: var(--muted);
+    }
+
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0 18px 46px;
+    }
+
+    .gallery {
+      column-count: 2;
+      column-gap: var(--gap);
+    }
+
+    .photo {
+      display: block;
+      width: 100%;
+      margin: 0 0 var(--gap);
+      padding: 0;
+      border: 0;
+      background: transparent;
+      cursor: zoom-in;
+      break-inside: avoid;
+      -webkit-column-break-inside: avoid;
+      overflow: hidden;
+      border-radius: 14px;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
+    }
+
+    .photo img {
+      display: block;
+      width: 100%;
+      height: auto;
+      transition: transform 0.25s ease, filter 0.25s ease;
+    }
+
+    .photo:hover img {
+      transform: scale(1.02);
+      filter: brightness(0.96);
+    }
+
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(0, 0, 0, 0.88);
+    }
+
+    .lightbox.is-open { display: flex; }
+
+    .lightbox img {
+      max-width: 96vw;
+      max-height: 92vh;
+      object-fit: contain;
+      border-radius: 10px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+    }
+
+    .close {
+      position: fixed;
+      top: 16px;
+      right: 18px;
+      width: 44px;
+      height: 44px;
+      border: 0;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.16);
+      color: white;
+      font-size: 30px;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .close:hover { background: rgba(255, 255, 255, 0.28); }
+
+    @media (max-width: 700px) {
+      header { padding: 32px 14px 22px; }
+      main { padding: 0 12px 32px; }
+      .gallery { column-count: 1; }
+      .photo { border-radius: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Karen&#x27;s Birthday Party</h1>
+    <div class="date">13 June 2026</div>
+  </header>
+
+  <main>
+    <section class="gallery" aria-label="Photo gallery">
+      <button class="photo" type="button" data-src="images/photo-01.jpg" aria-label="Open photo 1">
+        <img src="images/photo-01.jpg" alt="" loading="lazy">
+      </button>
+      <button class="photo" type="button" data-src="images/photo-02.jpg" aria-label="Open photo 2">
+        <img src="images/photo-02.jpg" alt="" loading="lazy">
+      </button>
+      <button class="photo" type="button" data-src="images/photo-03.jpg" aria-label="Open photo 3">
+        <img src="images/photo-03.jpg" alt="" loading="lazy">
+      </button>
+      <button class="photo" type="button" data-src="images/photo-04.jpg" aria-label="Open photo 4">
+        <img src="images/photo-04.jpg" alt="" loading="lazy">
+      </button>
+      <button class="photo" type="button" data-src="images/photo-05.jpg" aria-label="Open photo 5">
+        <img src="images/photo-05.jpg" alt="" loading="lazy">
+      </button>
+      <button class="photo" type="button" data-src="images/photo-06.jpg" aria-label="Open photo 6">
+        <img src="images/photo-06.jpg" alt="" loading="lazy">
+      </button>
+      <button class="photo" type="button" data-src="images/photo-07.jpg" aria-label="Open photo 7">
+        <img src="images/photo-07.jpg" alt="" loading="lazy">
+      </button>
+      <button class="photo" type="button" data-src="images/photo-08.jpg" aria-label="Open photo 8">
+        <img src="images/photo-08.jpg" alt="" loading="lazy">
+      </button>
+      <button class="photo" type="button" data-src="images/photo-09.jpg" aria-label="Open photo 9">
+        <img src="images/photo-09.jpg" alt="" loading="lazy">
+      </button>
+      <button class="photo" type="button" data-src="images/photo-10.jpg" aria-label="Open photo 10">
+        <img src="images/photo-10.jpg" alt="" loading="lazy">
+      </button>
+      <button class="photo" type="button" data-src="images/photo-11.jpg" aria-label="Open photo 11">
+        <img src="images/photo-11.jpg" alt="" loading="lazy">
+      </button>
+      <button class="photo" type="button" data-src="images/photo-12.jpg" aria-label="Open photo 12">
+        <img src="images/photo-12.jpg" alt="" loading="lazy">
+      </button>
+      <button class="photo" type="button" data-src="images/photo-13.jpg" aria-label="Open photo 13">
+        <img src="images/photo-13.jpg" alt="" loading="lazy">
+      </button>
+      <button class="photo" type="button" data-src="images/photo-14.jpg" aria-label="Open photo 14">
+        <img src="images/photo-14.jpg" alt="" loading="lazy">
+      </button>
+      <button class="photo" type="button" data-src="images/photo-15.jpg" aria-label="Open photo 15">
+        <img src="images/photo-15.jpg" alt="" loading="lazy">
+      </button>
+      <button class="photo" type="button" data-src="images/photo-16.jpg" aria-label="Open photo 16">
+        <img src="images/photo-16.jpg" alt="" loading="lazy">
+      </button>
+      <button class="photo" type="button" data-src="images/photo-17.jpg" aria-label="Open photo 17">
+        <img src="images/photo-17.jpg" alt="" loading="lazy">
+      </button>
+      <button class="photo" type="button" data-src="images/photo-18.jpg" aria-label="Open photo 18">
+        <img src="images/photo-18.jpg" alt="" loading="lazy">
+      </button>
+      <button class="photo" type="button" data-src="images/photo-19.jpg" aria-label="Open photo 19">
+        <img src="images/photo-19.jpg" alt="" loading="lazy">
+      </button>
+      <button class="photo" type="button" data-src="images/photo-20.jpg" aria-label="Open photo 20">
+        <img src="images/photo-20.jpg" alt="" loading="lazy">
+      </button>
+      <button class="photo" type="button" data-src="images/photo-21.jpg" aria-label="Open photo 21">
+        <img src="images/photo-21.jpg" alt="" loading="lazy">
+      </button>
+      <button class="photo" type="button" data-src="images/photo-22.jpg" aria-label="Open photo 22">
+        <img src="images/photo-22.jpg" alt="" loading="lazy">
+      </button>
+      <button class="photo" type="button" data-src="images/photo-23.jpg" aria-label="Open photo 23">
+        <img src="images/photo-23.jpg" alt="" loading="lazy">
+      </button>
+      <button class="photo" type="button" data-src="images/photo-24.jpg" aria-label="Open photo 24">
+        <img src="images/photo-24.jpg" alt="" loading="lazy">
+      </button>
+      <button class="photo" type="button" data-src="images/photo-25.jpg" aria-label="Open photo 25">
+        <img src="images/photo-25.jpg" alt="" loading="lazy">
+      </button>
+      <button class="photo" type="button" data-src="images/photo-26.jpg" aria-label="Open photo 26">
+        <img src="images/photo-26.jpg" alt="" loading="lazy">
+      </button>
+      <button class="photo" type="button" data-src="images/photo-27.jpg" aria-label="Open photo 27">
+        <img src="images/photo-27.jpg" alt="" loading="lazy">
+      </button>
+      <button class="photo" type="button" data-src="images/photo-28.jpg" aria-label="Open photo 28">
+        <img src="images/photo-28.jpg" alt="" loading="lazy">
+      </button>
+      <button class="photo" type="button" data-src="images/photo-29.jpg" aria-label="Open photo 29">
+        <img src="images/photo-29.jpg" alt="" loading="lazy">
+      </button>
+      <button class="photo" type="button" data-src="images/photo-30.jpg" aria-label="Open photo 30">
+        <img src="images/photo-30.jpg" alt="" loading="lazy">
+      </button>
+    </section>
+  </main>
+
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Enlarged photo">
+    <button class="close" type="button" aria-label="Close enlarged photo">&times;</button>
+    <img id="lightbox-image" src="" alt="">
+  </div>
+
+  <script>
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImage = document.getElementById('lightbox-image');
+    const closeButton = document.querySelector('.close');
+
+    document.querySelectorAll('.photo').forEach((button) => {
+      button.addEventListener('click', () => {
+        lightboxImage.src = button.dataset.src;
+        lightbox.classList.add('is-open');
+        document.body.style.overflow = 'hidden';
+      });
+    });
+
+    function closeLightbox() {
+      lightbox.classList.remove('is-open');
+      lightboxImage.src = '';
+      document.body.style.overflow = '';
+    }
+
+    closeButton.addEventListener('click', closeLightbox);
+
+    lightbox.addEventListener('click', (event) => {
+      if (event.target === lightbox) closeLightbox();
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && lightbox.classList.contains('is-open')) closeLightbox();
+    });
+  </script>
+</body>
+</html>
