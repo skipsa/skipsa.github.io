@@ -55,12 +55,15 @@
     .gallery { columns: 2; column-gap: 18px; }
     .photo-card {
       position: relative; display: inline-block; width: 100%; margin: 0 0 18px;
-      break-inside: avoid; border-radius: var(--radius); overflow: hidden;
-      background: #dfe5e8; box-shadow: var(--shadow); transform: translateZ(0);
+      -webkit-column-break-inside: avoid; break-inside: avoid; page-break-inside: avoid;
+      vertical-align: top; border-radius: var(--radius); overflow: hidden;
+      background: #dfe5e8; box-shadow: var(--shadow);
     }
     .image-button { display: block; width: 100%; padding: 0; border: 0; background: transparent; cursor: zoom-in; }
     .photo-card img { display: block; width: 100%; height: auto; transition: transform .35s ease, filter .25s ease; }
-    .photo-card:hover img { transform: scale(1.018); }
+    @media (hover: hover) and (pointer: fine) {
+      .photo-card:hover img { transform: scale(1.018); }
+    }
     .photo-card.selected img { filter: brightness(.84); }
     .select-button {
       position: absolute; z-index: 3; top: 12px; right: 12px;
@@ -304,9 +307,19 @@
     const progress = document.getElementById('progress');
     const progressText = document.getElementById('progressText');
 
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const supportsFileShare = typeof navigator.share === 'function' &&
+      typeof navigator.canShare === 'function';
+
+    function actionLabel(n) {
+      return isIOS && supportsFileShare ? `Share (${n})` : `Download (${n})`;
+    }
+
     function updateSelectionUI() {
       const n = selected.size;
-      floatingDownload.textContent = `Download (${n})`;
+      floatingDownload.textContent = actionLabel(n);
+      downloadTop.textContent = isIOS && supportsFileShare ? 'Share selected' : 'Download selected';
       floatingDownload.classList.toggle('visible', n > 0);
       downloadTop.disabled = n === 0;
       clearSelection.disabled = n === 0;
@@ -329,42 +342,72 @@
     selectAll.addEventListener('click', () => { files.forEach(f => selected.add(f)); updateSelectionUI(); });
     clearSelection.addEventListener('click', () => { selected.clear(); updateSelectionUI(); });
 
-    async function downloadSelected() {
-      if (!selected.size) return;
+    async function loadSelectedFiles(chosen) {
+      const sharedFiles = [];
+      for (let i = 0; i < chosen.length; i++) {
+        progressText.textContent = `Loading photo ${i + 1} of ${chosen.length}`;
+        const response = await fetch(`images/${encodeURIComponent(chosen[i])}`);
+        if (!response.ok) throw new Error(`Could not load ${chosen[i]}`);
+        const blob = await response.blob();
+        sharedFiles.push(new File([blob], chosen[i], { type: blob.type || 'image/jpeg' }));
+      }
+      return sharedFiles;
+    }
+
+    async function createZip(sharedFiles) {
       if (!window.JSZip) {
-        alert('The download component could not be loaded. Please check your internet connection and reload the page.');
+        throw new Error('The download component could not be loaded.');
+      }
+      progressText.textContent = 'Creating ZIP file';
+      const zip = new JSZip();
+      sharedFiles.forEach(file => zip.file(file.name, file));
+      const blob = await zip.generateAsync({ type: 'blob', compression: 'STORE' });
+      return new File([blob], 'Selected-Wakesurf-Photos.zip', { type: 'application/zip' });
+    }
+
+    async function saveZip(zipFile) {
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [zipFile] })) {
+        await navigator.share({ files: [zipFile], title: 'Selected Wakesurf Photos' });
         return;
       }
+      const url = URL.createObjectURL(zipFile);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = zipFile.name;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 30000);
+    }
+
+    async function downloadSelected() {
+      if (!selected.size) return;
       progress.classList.add('show');
       try {
-        const zip = new JSZip();
         const chosen = files.filter(f => selected.has(f));
-        for (let i = 0; i < chosen.length; i++) {
-          progressText.textContent = `Loading photo ${i + 1} of ${chosen.length}`;
-          const response = await fetch(`images/${encodeURIComponent(chosen[i])}`);
-          if (!response.ok) throw new Error(`Could not load ${chosen[i]}`);
-          zip.file(chosen[i], await response.blob());
-        }
-        progressText.textContent = 'Creating ZIP file';
-        const blob = await zip.generateAsync({ type: 'blob', compression: 'STORE' });
-        const zipFile = new File([blob], 'Selected-Wakesurf-Photos.zip', { type: 'application/zip' });
+        const sharedFiles = await loadSelectedFiles(chosen);
 
-        if (navigator.share && navigator.canShare && navigator.canShare({ files: [zipFile] })) {
-          await navigator.share({ files: [zipFile], title: 'Selected Wakesurf Photos' });
-        } else {
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = zipFile.name;
-          document.body.appendChild(a);
-          a.click();
-          a.remove();
-          setTimeout(() => URL.revokeObjectURL(url), 30000);
+        // On iPhone and iPad, share the JPEGs as separate files. The Share Sheet
+        // then offers “Save Images”, which adds them directly to the Photos app.
+        if (isIOS && supportsFileShare && navigator.canShare({ files: sharedFiles })) {
+          progressText.textContent = 'Opening Share Sheet';
+          progress.classList.remove('show');
+          await navigator.share({
+            files: sharedFiles,
+            title: 'Wakesurf Session',
+            text: 'Lutry, 28 juillet 2026'
+          });
+          return;
         }
+
+        // Other devices, or iOS when sharing this selection is unsupported,
+        // keep the original ZIP download as a reliable fallback.
+        const zipFile = await createZip(sharedFiles);
+        await saveZip(zipFile);
       } catch (error) {
         if (error.name !== 'AbortError') {
           console.error(error);
-          alert('The photos could not be prepared. Please reload the page and try again.');
+          alert('The photos could not be prepared. Try selecting fewer photos, reload the page, and try again.');
         }
       } finally {
         progress.classList.remove('show');
@@ -372,6 +415,7 @@
     }
     floatingDownload.addEventListener('click', downloadSelected);
     downloadTop.addEventListener('click', downloadSelected);
+    updateSelectionUI();
 
     const lightbox = document.getElementById('lightbox');
     const lightboxImage = document.getElementById('lightboxImage');
