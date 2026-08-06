@@ -1,1 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#111111">
+  <title>Wakesurf — 6 August 2026</title>
+  <meta name="description" content="Wakesurf photo gallery — 6 August 2026">
+  <style>
+    :root { color-scheme: light; --bg:#f7f7f5; --ink:#171717; --muted:#666; --panel:rgba(247,247,245,.93); }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { margin:0; background:var(--bg); color:var(--ink); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
+    header { max-width:1500px; margin:0 auto; padding:42px 22px 26px; text-align:center; }
+    h1 { margin:0; font-size:clamp(2rem,5vw,4.25rem); line-height:1; letter-spacing:-.045em; font-weight:750; }
+    .subtitle { margin:12px 0 0; color:var(--muted); font-size:1rem; }
+    .toolbar { position:sticky; top:0; z-index:20; display:flex; justify-content:center; gap:10px; padding:10px 16px; background:var(--panel); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border-top:1px solid rgba(0,0,0,.06); border-bottom:1px solid rgba(0,0,0,.08); }
+    button { font:inherit; }
+    .tool { border:0; border-radius:999px; padding:10px 16px; background:#171717; color:white; cursor:pointer; font-weight:650; }
+    .tool.secondary { background:#e8e8e5; color:#171717; }
+    .tool[hidden] { display:none; }
+    main { max-width:1500px; margin:0 auto; padding:18px 18px 52px; columns:2; column-gap:18px; }
+    .photo { position:relative; margin:0 0 18px; break-inside:avoid; border-radius:13px; overflow:hidden; background:#e8e8e5; cursor:zoom-in; }
+    .photo img { display:block; width:100%; height:auto; transition:transform .25s ease, opacity .25s ease; }
+    .photo:hover img { transform:scale(1.012); }
+    .select-toggle { display:none; position:absolute; z-index:2; top:12px; right:12px; width:34px; height:34px; border-radius:50%; border:2px solid white; background:rgba(0,0,0,.35); color:transparent; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,.25); }
+    body.selecting .select-toggle { display:block; }
+    .photo.selected .select-toggle { background:#fff; color:#111; }
+    .photo.selected::after { content:""; position:absolute; inset:0; border:4px solid white; border-radius:13px; pointer-events:none; box-shadow:inset 0 0 0 1px rgba(0,0,0,.25); }
+    .lightbox { position:fixed; inset:0; z-index:100; display:none; background:rgba(0,0,0,.94); align-items:center; justify-content:center; }
+    .lightbox.open { display:flex; }
+    .lightbox img { max-width:94vw; max-height:90vh; object-fit:contain; user-select:none; -webkit-user-drag:none; }
+    .lb-btn { position:absolute; border:0; color:#fff; background:rgba(0,0,0,.35); width:46px; height:46px; border-radius:50%; cursor:pointer; font-size:28px; line-height:1; }
+    .lb-close { top:max(18px,env(safe-area-inset-top)); right:18px; }
+    .lb-prev { left:18px; top:50%; transform:translateY(-50%); }
+    .lb-next { right:18px; top:50%; transform:translateY(-50%); }
+    .counter { position:absolute; bottom:max(18px,env(safe-area-inset-bottom)); color:#fff; background:rgba(0,0,0,.35); padding:7px 12px; border-radius:999px; font-size:.9rem; }
+    .notice { position:fixed; z-index:200; left:50%; bottom:24px; transform:translateX(-50%); background:#111; color:#fff; padding:11px 16px; border-radius:999px; opacity:0; pointer-events:none; transition:opacity .2s; }
+    .notice.show { opacity:1; }
+    @media(max-width:700px) {
+      header { padding:32px 18px 20px; }
+      main { columns:1; padding:14px 10px 42px; }
+      .photo { margin-bottom:10px; border-radius:10px; }
+      .photo:hover img { transform:none; }
+      .lb-prev { left:8px; } .lb-next { right:8px; }
+    }
+    @media(prefers-reduced-motion:reduce) { * { scroll-behavior:auto!important; transition:none!important; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Wakesurf</h1>
+    <p class="subtitle">6 August 2026</p>
+  </header>
+  <div class="toolbar">
+    <button id="selectMode" class="tool secondary" type="button">Select photos</button>
+    <button id="downloadSelected" class="tool" type="button" hidden>Download selected (<span id="selectedCount">0</span>)</button>
+    <button id="cancelSelection" class="tool secondary" type="button" hidden>Cancel</button>
+  </div>
+  <main id="gallery">
+      <figure class="photo" data-index="0">
+        <button class="select-toggle" type="button" aria-label="Select photo 1" aria-pressed="false">✓</button>
+        <img src="images/photo-01.jpg" data-full="downloads/photo-01.jpg" width="1800" height="1200" loading="eager" decoding="async" alt="Wakesurf photo 1">
+      </figure>
+      <figure class="photo" data-index="1">
+        <button class="select-toggle" type="button" aria-label="Select photo 2" aria-pressed="false">✓</button>
+        <img src="images/photo-02.jpg" data-full="downloads/photo-02.jpg" width="1800" height="1200" loading="eager" decoding="async" alt="Wakesurf photo 2">
+      </figure>
+      <figure class="photo" data-index="2">
+        <button class="select-toggle" type="button" aria-label="Select photo 3" aria-pressed="false">✓</button>
+        <img src="images/photo-03.jpg" data-full="downloads/photo-03.jpg" width="1800" height="1200" loading="eager" decoding="async" alt="Wakesurf photo 3">
+      </figure>
+      <figure class="photo" data-index="3">
+        <button class="select-toggle" type="button" aria-label="Select photo 4" aria-pressed="false">✓</button>
+        <img src="images/photo-04.jpg" data-full="downloads/photo-04.jpg" width="1800" height="1200" loading="eager" decoding="async" alt="Wakesurf photo 4">
+      </figure>
+      <figure class="photo" data-index="4">
+        <button class="select-toggle" type="button" aria-label="Select photo 5" aria-pressed="false">✓</button>
+        <img src="images/photo-05.jpg" data-full="downloads/photo-05.jpg" width="1800" height="1200" loading="lazy" decoding="async" alt="Wakesurf photo 5">
+      </figure>
+      <figure class="photo" data-index="5">
+        <button class="select-toggle" type="button" aria-label="Select photo 6" aria-pressed="false">✓</button>
+        <img src="images/photo-06.jpg" data-full="downloads/photo-06.jpg" width="1800" height="1200" loading="lazy" decoding="async" alt="Wakesurf photo 6">
+      </figure>
+      <figure class="photo" data-index="6">
+        <button class="select-toggle" type="button" aria-label="Select photo 7" aria-pressed="false">✓</button>
+        <img src="images/photo-07.jpg" data-full="downloads/photo-07.jpg" width="1800" height="1200" loading="lazy" decoding="async" alt="Wakesurf photo 7">
+      </figure>
+      <figure class="photo" data-index="7">
+        <button class="select-toggle" type="button" aria-label="Select photo 8" aria-pressed="false">✓</button>
+        <img src="images/photo-08.jpg" data-full="downloads/photo-08.jpg" width="1800" height="1200" loading="lazy" decoding="async" alt="Wakesurf photo 8">
+      </figure>
+      <figure class="photo" data-index="8">
+        <button class="select-toggle" type="button" aria-label="Select photo 9" aria-pressed="false">✓</button>
+        <img src="images/photo-09.jpg" data-full="downloads/photo-09.jpg" width="1800" height="1200" loading="lazy" decoding="async" alt="Wakesurf photo 9">
+      </figure>
+      <figure class="photo" data-index="9">
+        <button class="select-toggle" type="button" aria-label="Select photo 10" aria-pressed="false">✓</button>
+        <img src="images/photo-10.jpg" data-full="downloads/photo-10.jpg" width="1800" height="1200" loading="lazy" decoding="async" alt="Wakesurf photo 10">
+      </figure>
+      <figure class="photo" data-index="10">
+        <button class="select-toggle" type="button" aria-label="Select photo 11" aria-pressed="false">✓</button>
+        <img src="images/photo-11.jpg" data-full="downloads/photo-11.jpg" width="1800" height="1200" loading="lazy" decoding="async" alt="Wakesurf photo 11">
+      </figure>
+      <figure class="photo" data-index="11">
+        <button class="select-toggle" type="button" aria-label="Select photo 12" aria-pressed="false">✓</button>
+        <img src="images/photo-12.jpg" data-full="downloads/photo-12.jpg" width="1800" height="1200" loading="lazy" decoding="async" alt="Wakesurf photo 12">
+      </figure>
+      <figure class="photo" data-index="12">
+        <button class="select-toggle" type="button" aria-label="Select photo 13" aria-pressed="false">✓</button>
+        <img src="images/photo-13.jpg" data-full="downloads/photo-13.jpg" width="1800" height="1200" loading="lazy" decoding="async" alt="Wakesurf photo 13">
+      </figure>
+      <figure class="photo" data-index="13">
+        <button class="select-toggle" type="button" aria-label="Select photo 14" aria-pressed="false">✓</button>
+        <img src="images/photo-14.jpg" data-full="downloads/photo-14.jpg" width="1800" height="1200" loading="lazy" decoding="async" alt="Wakesurf photo 14">
+      </figure>
+      <figure class="photo" data-index="14">
+        <button class="select-toggle" type="button" aria-label="Select photo 15" aria-pressed="false">✓</button>
+        <img src="images/photo-15.jpg" data-full="downloads/photo-15.jpg" width="1800" height="1200" loading="lazy" decoding="async" alt="Wakesurf photo 15">
+      </figure>
+      <figure class="photo" data-index="15">
+        <button class="select-toggle" type="button" aria-label="Select photo 16" aria-pressed="false">✓</button>
+        <img src="images/photo-16.jpg" data-full="downloads/photo-16.jpg" width="1800" height="1200" loading="lazy" decoding="async" alt="Wakesurf photo 16">
+      </figure>
+  </main>
 
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
+    <button class="lb-btn lb-close" id="closeLightbox" aria-label="Close">×</button>
+    <button class="lb-btn lb-prev" id="prevPhoto" aria-label="Previous photo">‹</button>
+    <img id="lightboxImage" alt="Enlarged wakesurf photo">
+    <button class="lb-btn lb-next" id="nextPhoto" aria-label="Next photo">›</button>
+    <div class="counter" id="counter"></div>
+  </div>
+  <div class="notice" id="notice"></div>
+
+  <script>
+  const photos = [
+    { gallery: "images/photo-01.jpg", full: "downloads/photo-01.jpg", name: "photo-01.jpg" },
+    { gallery: "images/photo-02.jpg", full: "downloads/photo-02.jpg", name: "photo-02.jpg" },
+    { gallery: "images/photo-03.jpg", full: "downloads/photo-03.jpg", name: "photo-03.jpg" },
+    { gallery: "images/photo-04.jpg", full: "downloads/photo-04.jpg", name: "photo-04.jpg" },
+    { gallery: "images/photo-05.jpg", full: "downloads/photo-05.jpg", name: "photo-05.jpg" },
+    { gallery: "images/photo-06.jpg", full: "downloads/photo-06.jpg", name: "photo-06.jpg" },
+    { gallery: "images/photo-07.jpg", full: "downloads/photo-07.jpg", name: "photo-07.jpg" },
+    { gallery: "images/photo-08.jpg", full: "downloads/photo-08.jpg", name: "photo-08.jpg" },
+    { gallery: "images/photo-09.jpg", full: "downloads/photo-09.jpg", name: "photo-09.jpg" },
+    { gallery: "images/photo-10.jpg", full: "downloads/photo-10.jpg", name: "photo-10.jpg" },
+    { gallery: "images/photo-11.jpg", full: "downloads/photo-11.jpg", name: "photo-11.jpg" },
+    { gallery: "images/photo-12.jpg", full: "downloads/photo-12.jpg", name: "photo-12.jpg" },
+    { gallery: "images/photo-13.jpg", full: "downloads/photo-13.jpg", name: "photo-13.jpg" },
+    { gallery: "images/photo-14.jpg", full: "downloads/photo-14.jpg", name: "photo-14.jpg" },
+    { gallery: "images/photo-15.jpg", full: "downloads/photo-15.jpg", name: "photo-15.jpg" },
+    { gallery: "images/photo-16.jpg", full: "downloads/photo-16.jpg", name: "photo-16.jpg" }
+  ];
+  const figures = [...document.querySelectorAll('.photo')];
+  const lightbox = document.getElementById('lightbox');
+  const lbImage = document.getElementById('lightboxImage');
+  const counter = document.getElementById('counter');
+  const selectMode = document.getElementById('selectMode');
+  const downloadSelected = document.getElementById('downloadSelected');
+  const cancelSelection = document.getElementById('cancelSelection');
+  const selectedCount = document.getElementById('selectedCount');
+  const notice = document.getElementById('notice');
+  let current = 0;
+  let selecting = false;
+  const selected = new Set();
+
+  function showNotice(text) {
+    notice.textContent = text; notice.classList.add('show');
+    setTimeout(() => notice.classList.remove('show'), 2200);
+  }
+  function openLightbox(index) {
+    current = index; lbImage.src = photos[current].gallery;
+    counter.textContent = `${current + 1} / ${photos.length}`;
+    lightbox.classList.add('open'); document.body.style.overflow = 'hidden';
+  }
+  function closeLightbox() { lightbox.classList.remove('open'); document.body.style.overflow = ''; lbImage.src=''; }
+  function move(step) { current = (current + step + photos.length) % photos.length; openLightbox(current); }
+  function updateSelectionUI() {
+    figures.forEach((f,i) => f.classList.toggle('selected', selected.has(i)));
+    selectedCount.textContent = selected.size;
+    downloadSelected.disabled = selected.size === 0;
+  }
+  function setSelecting(value) {
+    selecting = value; document.body.classList.toggle('selecting', value);
+    selectMode.hidden = value; downloadSelected.hidden = !value; cancelSelection.hidden = !value;
+    if (!value) { selected.clear(); updateSelectionUI(); }
+  }
+  figures.forEach((figure,index) => {
+    figure.addEventListener('click', e => {
+      if (selecting) { selected.has(index) ? selected.delete(index) : selected.add(index); updateSelectionUI(); }
+      else openLightbox(index);
+    });
+  });
+  selectMode.addEventListener('click', () => setSelecting(true));
+  cancelSelection.addEventListener('click', () => setSelecting(false));
+  document.getElementById('closeLightbox').addEventListener('click', closeLightbox);
+  document.getElementById('prevPhoto').addEventListener('click', e => { e.stopPropagation(); move(-1); });
+  document.getElementById('nextPhoto').addEventListener('click', e => { e.stopPropagation(); move(1); });
+  lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+  document.addEventListener('keydown', e => {
+    if (!lightbox.classList.contains('open')) return;
+    if (e.key === 'Escape') closeLightbox(); if (e.key === 'ArrowLeft') move(-1); if (e.key === 'ArrowRight') move(1);
+  });
+  let touchX = null;
+  lightbox.addEventListener('touchstart', e => touchX = e.changedTouches[0].clientX, {passive:true});
+  lightbox.addEventListener('touchend', e => {
+    if (touchX === null) return; const dx=e.changedTouches[0].clientX-touchX; if (Math.abs(dx)>55) move(dx>0?-1:1); touchX=null;
+  }, {passive:true});
+
+  downloadSelected.addEventListener('click', async () => {
+    const chosen=[...selected].sort((a,b)=>a-b);
+    if (!chosen.length) return;
+    try {
+      if (navigator.share && navigator.canShare) {
+        const files=[];
+        for (const i of chosen) {
+          const response=await fetch(photos[i].full); const blob=await response.blob();
+          files.push(new File([blob], photos[i].name, {type:'image/jpeg'}));
+        }
+        if (navigator.canShare({files})) { await navigator.share({files, title:'Wakesurf photos'}); return; }
+      }
+    } catch (err) { if (err.name === 'AbortError') return; }
+    chosen.forEach((i,n) => setTimeout(() => {
+      const a=document.createElement('a'); a.href=photos[i].full; a.download=photos[i].name; document.body.appendChild(a); a.click(); a.remove();
+    }, n*300));
+    showNotice(chosen.length === 1 ? 'Download started' : 'Downloads started');
+  });
+  </script>
+</body>
+</html>
