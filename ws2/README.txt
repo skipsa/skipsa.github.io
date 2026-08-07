@@ -1,5 +1,5 @@
 WS2 — GitHub Pages upload
-=============================
+==============================
 
 Target URL: https://slama.one/ws2
 
